@@ -1,0 +1,202 @@
+cata@AA25LABIAP05:~/Language-Model-Efficiency-Challenge$ python3 -m src.fine_tuning
+2024-11-19 20:14:30.940348: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2024-11-19 20:14:30.948174: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:485] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2024-11-19 20:14:30.957215: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:8454] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2024-11-19 20:14:30.959766: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1452] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2024-11-19 20:14:30.966650: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-19 20:14:31.482685: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+Loading checkpoint shards: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3/3 [00:03<00:00,  1.24s/it]
+/home/cata/.local/lib/python3.10/site-packages/huggingface_hub/utils/_deprecation.py:100: FutureWarning: Deprecated argument(s) used in '__init__': max_seq_length. Will not be supported from version '1.0.0'.
+
+Deprecated positional argument(s) used in SFTTrainer, please use the SFTConfig to set these arguments instead.
+  warnings.warn(message, FutureWarning)
+/home/cata/.local/lib/python3.10/site-packages/trl/trainer/sft_trainer.py:283: UserWarning: You passed a `max_seq_length` argument to the SFTTrainer, the value you passed will override the one in the `SFTConfig`.
+  warnings.warn(
+max_steps is given, it will override any value given in num_train_epochs
+Starting fine-tuning on OASST1...
+Currently training with a batch size of: 4
+***** Running training *****
+  Num examples = 47,620
+  Num Epochs = 1
+  Instantaneous batch size per device = 4
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Gradient Accumulation steps = 2
+  Total optimization steps = 100
+  Number of trainable parameters = 41,943,040
+  0%|                                                                                                                                                                      | 0/100 [00:00<?, ?it/s]`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...
+/home/cata/.local/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+{'loss': 3.1039, 'grad_norm': 2.779930353164673, 'learning_rate': 4e-05, 'epoch': 0.0}                                                                                                             
+{'loss': 2.9217, 'grad_norm': 3.701197624206543, 'learning_rate': 8e-05, 'epoch': 0.0}                                                                                                             
+ 25%|███████████████████████████████████████▎                                                                                                                     | 25/100 [02:16<06:47,  5.44s/it]
+***** Running Evaluation *****
+  Num examples = 5292
+  Batch size = 4
+{'eval_loss': 2.6340584754943848, 'eval_runtime': 1181.6712, 'eval_samples_per_second': 4.478, 'eval_steps_per_second': 1.12, 'epoch': 0.0}                                                        
+ 25%|███████████████████████████████████████▎                                                                                                                     | 25/100 [21:57<06:47,  5.44s/itSaving model checkpoint to ./output_oasst1/checkpoint-25                                                                                                                                            
+loading configuration file config.json from cache at /home/cata/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.3/snapshots/d8cadc02ac76bd617a919d50b092e59d2d110aff/config.json
+Model config MistralConfig {
+  "architectures": [
+    "MistralForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 1000000.0,
+  "sliding_window": null,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.45.2",
+  "use_cache": true,
+  "vocab_size": 32768
+}
+
+tokenizer config file saved in ./output_oasst1/checkpoint-25/tokenizer_config.json
+Special tokens file saved in ./output_oasst1/checkpoint-25/special_tokens_map.json
+/home/cata/.local/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+{'loss': 2.7634, 'grad_norm': 4.147429466247559, 'learning_rate': 9.333333333333334e-05, 'epoch': 0.01}                                                                                            
+{'loss': 2.6075, 'grad_norm': 4.2354817390441895, 'learning_rate': 8e-05, 'epoch': 0.01}                                                                                                           
+{'loss': 2.4125, 'grad_norm': 3.816777467727661, 'learning_rate': 6.666666666666667e-05, 'epoch': 0.01}                                                                                            
+ 50%|██████████████████████████████████████████████████████████████████████████████▌                                                                              | 50/100 [24:14<04:34,  5.49s/it]
+***** Running Evaluation *****
+  Num examples = 5292
+  Batch size = 4
+{'eval_loss': 2.4819087982177734, 'eval_runtime': 1181.4764, 'eval_samples_per_second': 4.479, 'eval_steps_per_second': 1.12, 'epoch': 0.01}                                                       
+ 50%|██████████████████████████████████████████████████████████████████████████████▌                                                                              | 50/100 [43:55<04:34,  5.49s/itSaving model checkpoint to ./output_oasst1/checkpoint-50                                                                                                                                            
+loading configuration file config.json from cache at /home/cata/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.3/snapshots/d8cadc02ac76bd617a919d50b092e59d2d110aff/config.json
+Model config MistralConfig {
+  "architectures": [
+    "MistralForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 1000000.0,
+  "sliding_window": null,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.45.2",
+  "use_cache": true,
+  "vocab_size": 32768
+}
+
+tokenizer config file saved in ./output_oasst1/checkpoint-50/tokenizer_config.json
+Special tokens file saved in ./output_oasst1/checkpoint-50/special_tokens_map.json
+/home/cata/.local/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+{'loss': 2.5357, 'grad_norm': 3.192811965942383, 'learning_rate': 5.333333333333333e-05, 'epoch': 0.01}                                                                                            
+{'loss': 2.3092, 'grad_norm': 3.710261344909668, 'learning_rate': 4e-05, 'epoch': 0.01}                                                                                                            
+ 75%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▊                                       | 75/100 [46:12<02:17,  5.49s/it]
+***** Running Evaluation *****
+  Num examples = 5292
+  Batch size = 4
+{'eval_loss': 2.452927827835083, 'eval_runtime': 1181.0512, 'eval_samples_per_second': 4.481, 'eval_steps_per_second': 1.12, 'epoch': 0.01}                                                        
+ 75%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎                                      | 75/100 [1:05:53<02:17,  5.49s/itSaving model checkpoint to ./output_oasst1/checkpoint-75                                                                                                                                            
+loading configuration file config.json from cache at /home/cata/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.3/snapshots/d8cadc02ac76bd617a919d50b092e59d2d110aff/config.json
+Model config MistralConfig {
+  "architectures": [
+    "MistralForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 1000000.0,
+  "sliding_window": null,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.45.2",
+  "use_cache": true,
+  "vocab_size": 32768
+}
+
+tokenizer config file saved in ./output_oasst1/checkpoint-75/tokenizer_config.json
+Special tokens file saved in ./output_oasst1/checkpoint-75/special_tokens_map.json
+/home/cata/.local/lib/python3.10/site-packages/torch/_dynamo/eval_frame.py:632: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.5 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+{'loss': 2.3156, 'grad_norm': 3.9750664234161377, 'learning_rate': 2.6666666666666667e-05, 'epoch': 0.01}                                                                                          
+{'loss': 2.6894, 'grad_norm': 5.590804100036621, 'learning_rate': 1.3333333333333333e-05, 'epoch': 0.02}                                                                                           
+{'loss': 2.547, 'grad_norm': 2.7956080436706543, 'learning_rate': 0.0, 'epoch': 0.02}                                                                                                              
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [1:08:09<00:00,  5.49s/it]
+***** Running Evaluation *****
+  Num examples = 5292
+  Batch size = 4
+{'eval_loss': 2.4379916191101074, 'eval_runtime': 1182.9874, 'eval_samples_per_second': 4.473, 'eval_steps_per_second': 1.118, 'epoch': 0.02}                                                      
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [1:27:52<00:00,  5.49s/itSaving model checkpoint to ./output_oasst1/checkpoint-100                                                                                                                                           
+loading configuration file config.json from cache at /home/cata/.cache/huggingface/hub/models--mistralai--Mistral-7B-v0.3/snapshots/d8cadc02ac76bd617a919d50b092e59d2d110aff/config.json
+Model config MistralConfig {
+  "architectures": [
+    "MistralForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 1000000.0,
+  "sliding_window": null,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.45.2",
+  "use_cache": true,
+  "vocab_size": 32768
+}
+
+tokenizer config file saved in ./output_oasst1/checkpoint-100/tokenizer_config.json
+Special tokens file saved in ./output_oasst1/checkpoint-100/special_tokens_map.json
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+{'train_runtime': 5273.995, 'train_samples_per_second': 0.152, 'train_steps_per_second': 0.019, 'train_loss': 2.6205906105041503, 'epoch': 0.02}                                                   
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [1:27:53<00:00, 52.74s/it]
+Configuration saved in output_oasst1/config.json
+Configuration saved in output_oasst1/generation_config.json
+Model weights saved in output_oasst1/model.safetensors
+tokenizer config file saved in output_oasst1/tokenizer_config.json
+Special tokens file saved in output_oasst1/special_tokens_map.json
+Fine-tuning on OASST1 complete. Model saved.

@@ -37,7 +37,7 @@ def download_lima_dataset(data_path):
     # We separate the dataset into train, validation and test
     # The seed is set to 42 for reproducibility
     # We use 80% of the data for training, 10% for validation and 10% for testing
-    train, temp = train_test_split(df_lima, test_size=0.2, random_state=42)
+    train, temp = train_test_split(df_lima, test_size=0.1, random_state=42)
     val, test = train_test_split(temp, test_size=0.5, random_state=42)
 
     # We save the datasets in the lima folder
@@ -105,7 +105,7 @@ def download_oasst1_dataset(data_path):
     os.makedirs(os.path.join(data_path, "oasst1"), exist_ok=True)
     oasst1_path = os.path.join(data_path, "oasst1")
     # Download the dataset
-    download_and_preprocess_oasst1_split(oasst1_path, splits["train"], test_size=0.1)
+    download_and_preprocess_oasst1_split(oasst1_path, splits["train"], test_size=0.01)
     download_and_preprocess_oasst1_split(oasst1_path, splits["validation"], test_size=None)
 
     print(f"OASST1 dataset downloaded and saved in the data path {data_path}/oasst1.")
@@ -135,7 +135,6 @@ def load_datasets(data_path):
     # Load the datasets
     lima_path = os.path.join(data_path, "lima")
     oasst1_path = os.path.join(data_path, "oasst1")
-    # TODO: Check if this format is convenient or if we should use a different one
     lima_train = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_train"))
     lima_val = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_val"))
     lima_test = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_test"))
