@@ -6,7 +6,7 @@ from tqdm import tqdm
 import os
 
 
-model_name = './models/output_oasst1/checkpoint-1000'
+model_name = './models/model2/output_lima/checkpoint-100'
 
 # Step 1: Load the tokenizer and model with quantization
 # model_name = "models/model1"  # Near 3B model (smallest available Qwen model)
@@ -19,14 +19,19 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 
 # Step 2: Load the google/IFEval dataset
-_, _, oasst1_test, _, _, _ = load_datasets('./data')
+# _, _, oasst1_test, _, _, lima_test = load_datasets('./data')
+
 
 tests = [{'prompt': 'What is the capital of France?', 'response': 'Paris'}, 
-         {'prompt': 'Write the days of the week.', 'response': 'Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday'}]
+         {'prompt': 'Write the days of the week.', 'response': 'Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday'},
+         {'prompt': '¿Cuál es la diferencia entre echo, print, print_r, var_dump y var_export en PHP?', 'response': 'echo: Muestra una o más cadenas de texto. print: Muestra una cadena de texto. print_r: Muestra información sobre una variable de forma legible. var_dump: Muestra información sobre una variable de forma legible. var_export: Muestra una representación de una variable que puede ser utilizada como código PHP.'},
+         {'prompt': 'Dime tres asignaturas que se imparten en la carrera de Ingeniería Informática.', 'response': 'Programación, Matemáticas, Física'},
+         {'prompt': 'Cuales son los planetas del sistema solar?', 'response': 'Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano, Neptuno'}]
 
 # Step 3: Generate predictions on the dataset
 os.makedirs('responses/tests', exist_ok=True)
-output_file = f"responses/tests/model_responses_test.json"
+num_model = model_name.split('/')[-3][-1]
+output_file = f"responses/tests/model_{num_model}_responses_test.json"
 # output_file = f"responses/dataset/model_responses{num_model}.json"
 with open(output_file, 'w', encoding='utf-8') as f_out:
     for sample in tqdm(tests):

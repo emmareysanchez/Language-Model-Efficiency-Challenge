@@ -12,7 +12,7 @@ from transformers import (
 from trl import SFTTrainer, SFTConfig
 from evaluate import load
 import time
-# from utils import 
+import os
 from src.utils import load_datasets
 
 
@@ -33,32 +33,38 @@ task_type = "CAUSAL_LM"
 # 3. Training hyperparameters
 overwrite_output_dir = True
 seed = 42
-save_total_limit = 1
+save_total_limit = 3
+try:
+    num_model = len(os.listdir("./models")) + 1
+except FileNotFoundError:
+    os.makedirs("./models")
+    num_model = 1
 
 # 3.1 OASST1 hyperparameters
 train_batch_size_oasst1 = 8
 eval_batch_size_oasst1 = 8
 num_train_epochs_oasst1 = 4
 logging_steps_oasst1 = 1000
-save_steps_oasst1 = 1000
-output_dir_oasst1 = "./models/oasst1"
+save_steps_oasst1 = 25
+output_dir_oasst1 = f"./models/model{num_model}/output_oasst1"
 per_device_train_batch_size_oasst1 = 4 # Try 8
 per_device_eval_batch_size_oasst1 = 4 # Try 8
 gradient_accumulation_steps_oasst1 = 2
 warmup_steps_oasst1 = 0
 weight_decay_oasst1 = 0.01
 learning_rate_oasst1 = 5e-5 # Try 1e-4
-max_steps_oasst1 = 10000
+max_steps_oasst1 = 1000
 adam_epsilon_oasst1 = 1e-8
 max_grad_norm_oasst1 = 1.0
 
 # 3.2 LIMA hyperparameters
+
 train_batch_size_lima = 8
 eval_batch_size_lima = 8
 num_train_epochs_lima = 4
 logging_steps_lima = 1000
-save_steps_lima = 1000
-output_dir_lima = "./models/lima"
+save_steps_lima = 25
+output_dir_lima = f"./models/model{num_model}/output_lima"
 per_device_train_batch_size_lima = 4 # Try 8
 per_device_eval_batch_size_lima = 4 # Try 8
 gradient_accumulation_steps_lima = 2
@@ -162,7 +168,7 @@ lora_config = LoraConfig(
 # 5.1 Training with OASST1
 # Training arguments for OASST1
 oasst1_training_args = TrainingArguments(
-    output_dir="./models/output_oasst1",
+    output_dir=output_dir_oasst1,
     eval_strategy="steps",
     do_eval=True,
     optim="paged_adamw_8bit",
@@ -195,7 +201,6 @@ oasst1_trainer = SFTTrainer(
     max_seq_length=256,
     tokenizer=tokenizer,
     args=oasst1_training_args,
-    # dataset_text_field="response",
 )
 print("Starting fine-tuning on OASST1...")
 oasst1_trainer.train()
@@ -203,15 +208,14 @@ oasst1_trainer.train()
 # Save the model fine-tuned on OASST1
 print("Saving fine-tuned model on OASST1 without gradients...")
 model.eval()  # Asegúrate de que el modelo esté en modo evaluación
-model.save_pretrained("models/output_oasst1", safe_serialization=True)
-tokenizer.save_pretrained("models/output_oasst1")
+model.save_pretrained(output_dir_oasst1 + "/final", safe_serialization=True)
+tokenizer.save_pretrained(output_dir_oasst1 + "/final")
 print("Model fine-tuned on OASST1 saved without gradients.")
-
 
 
 # Training with LIMA
 lima_training_args = TrainingArguments(
-    output_dir="./models/output_lima",
+    output_dir=output_dir_lima,
     eval_strategy="steps",
     do_eval=True,
     optim="paged_adamw_8bit",
@@ -243,8 +247,7 @@ lima_trainer = SFTTrainer(
     peft_config=lora_config,
     max_seq_length=256,
     tokenizer=tokenizer,
-    args=oasst1_training_args,
-    # dataset_text_field="response",
+    args=lima_training_args,
 )
 print("Starting fine-tuning on LIMA...")
 lima_trainer.train()
@@ -252,6 +255,6 @@ lima_trainer.train()
 # Save the model fine-tuned on LIMA
 print("Saving fine-tuned model on LIMA without gradients...")
 model.eval()  # Asegúrate de que el modelo esté en modo evaluación
-model.save_pretrained("models/output_lima", safe_serialization=True)
-tokenizer.save_pretrained("models/output_lima")
+model.save_pretrained(output_dir_lima + "/final", safe_serialization=True)
+tokenizer.save_pretrained(output_dir_lima + "/final")
 print("Model fine-tuned on LIMA saved without gradients.")
