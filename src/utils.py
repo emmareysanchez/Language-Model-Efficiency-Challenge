@@ -37,21 +37,15 @@ def download_lima_dataset(data_path):
     # We separate the dataset into train, validation and test
     # The seed is set to 42 for reproducibility
     # We use 80% of the data for training, 10% for validation and 10% for testing
-    train, temp = train_test_split(df_lima, test_size=0.1, random_state=42)
-    val, test = train_test_split(temp, test_size=0.5, random_state=42)
+    train, val = train_test_split(df_lima, test_size=0.05, random_state=42)
 
     # We save the datasets in the lima folder
     Dataset.from_pandas(train).save_to_disk(os.path.join(lima_path, "lima_processed_train"))
     Dataset.from_pandas(val).save_to_disk(os.path.join(lima_path, "lima_processed_val"))
-    Dataset.from_pandas(test).save_to_disk(os.path.join(lima_path, "lima_processed_test"))
-
-    # train.to_json(os.path.join(lima_path, "lima_processed_train.json"), orient="records", lines=True, force_ascii=False)
-    # val.to_json(os.path.join(lima_path, "lima_processed_val.json"), orient="records", lines=True, force_ascii=False)
-    # test.to_json(os.path.join(lima_path, "lima_processed_test.json"), orient="records", lines=True, force_ascii=False)
     print(f"LIMA dataset downloaded and saved in the data path {data_path}/lima.")
 
 
-def download_and_preprocess_oasst1_split(data_path, split, test_size=None):
+def download_and_preprocess_oasst1_split(data_path, split):
     """
     Download the OASST1 dataset split given and save it in the data path.
 
@@ -71,6 +65,9 @@ def download_and_preprocess_oasst1_split(data_path, split, test_size=None):
     # Filter for assistant messages
     assistant_dataset = df.filter(lambda x: x["role"] == "assistant")
 
+    # Filter for messages in english or spanish
+    assistant_dataset = assistant_dataset.filter(lambda x: x["lang"] in ["en", "es"])
+
     # Add a new column with the prompt for each assistant message
     def add_prompt(example):
         parent_id = example["parent_id"]
@@ -78,16 +75,15 @@ def download_and_preprocess_oasst1_split(data_path, split, test_size=None):
             return {"prompt": message_id_to_text[parent_id], "response": example["text"]}
         return None
 
-    assistant_dataset = assistant_dataset.map(add_prompt, remove_columns=["message_id", "parent_id", "role"])
+    assistant_dataset = assistant_dataset.map(add_prompt, remove_columns=["message_id", "parent_id", "role", "lang"])
     assistant_dataset = assistant_dataset.filter(lambda x: x is not None)
 
     # Split into train and test if test_size is provided
-    if test_size:
-        split_data = assistant_dataset.train_test_split(test_size=test_size, seed=42)
-        split_data["train"].save_to_disk(os.path.join(data_path, "oasst1_processed_train"))
-        split_data["test"].save_to_disk(os.path.join(data_path, "oasst1_processed_val"))
+    if "train" in split:
+        assistant_dataset.save_to_disk(os.path.join(data_path, "oasst1_processed_train"))
+
     else:
-        assistant_dataset.save_to_disk(os.path.join(data_path, "oasst1_processed_test"))
+        assistant_dataset.save_to_disk(os.path.join(data_path, "oasst1_processed_val"))
 
 
 def download_oasst1_dataset(data_path):
@@ -105,8 +101,8 @@ def download_oasst1_dataset(data_path):
     os.makedirs(os.path.join(data_path, "oasst1"), exist_ok=True)
     oasst1_path = os.path.join(data_path, "oasst1")
     # Download the dataset
-    download_and_preprocess_oasst1_split(oasst1_path, splits["train"], test_size=0.01)
-    download_and_preprocess_oasst1_split(oasst1_path, splits["validation"], test_size=None)
+    download_and_preprocess_oasst1_split(oasst1_path, splits["train"])
+    download_and_preprocess_oasst1_split(oasst1_path, splits["validation"])
 
     print(f"OASST1 dataset downloaded and saved in the data path {data_path}/oasst1.")
 
@@ -122,10 +118,8 @@ def load_datasets(data_path):
     Returns:
         lima_train: pd.DataFrame, LIMA training dataset
         lima_val: pd.DataFrame, LIMA validation dataset
-        lima_test: pd.DataFrame, LIMA test dataset
         oasst1_train: pd.DataFrame, OASST1 training dataset
         oasst1_val: pd.DataFrame, OASST1 validation dataset
-        oasst1_test: pd.DataFrame, OASST1 test dataset
     """
     if not os.path.exists(data_path):
         os.makedirs(data_path)
@@ -137,16 +131,14 @@ def load_datasets(data_path):
     oasst1_path = os.path.join(data_path, "oasst1")
     lima_train = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_train"))
     lima_val = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_val"))
-    lima_test = Dataset.load_from_disk(os.path.join(lima_path, "lima_processed_test"))
     oasst1_train = Dataset.load_from_disk(os.path.join(oasst1_path, "oasst1_processed_train"))
     oasst1_val = Dataset.load_from_disk(os.path.join(oasst1_path, "oasst1_processed_val"))
-    oasst1_test = Dataset.load_from_disk(os.path.join(oasst1_path, "oasst1_processed_test"))
 
-    return lima_train, lima_val, lima_test, oasst1_train, oasst1_val, oasst1_test
+    return lima_train, lima_val, oasst1_train, oasst1_val
 
 
 if __name__ == "__main__":
     data_path = "./data"
-    lima_train, lima_val, lima_test, oasst1_train, oasst1_val, oasst1_test = load_datasets(data_path)
+    lima_train, lima_val, oasst1_train, oasst1_val = load_datasets(data_path)
 
     print("All datasets loaded successfully.")

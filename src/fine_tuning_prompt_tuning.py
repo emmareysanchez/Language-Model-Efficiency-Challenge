@@ -1,6 +1,6 @@
 import torch
 from datasets import load_dataset
-from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
+from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model, PromptTuningConfig
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -23,12 +23,8 @@ llm_int8_threshold = 6.0
 llm_int8_skip_modules = None
 quant_type = "nf4"
 
-# 2. LoRA configuration hyperparameters
-r = 16               # Try 8
-scaling_factor = 16  # Try 32
-lora_dropout = 0.05  # Try 0.1
-bias = "none"
-task_type = "CAUSAL_LM"
+# 2. Promp tuning hyperparameters
+num_virtual_tokens = 50
 
 # 3. Training hyperparameters
 overwrite_output_dir = True
@@ -54,7 +50,7 @@ gradient_accumulation_steps_oasst1 = 4
 warmup_steps_oasst1 = 0
 weight_decay_oasst1 = 0.01
 learning_rate_oasst1 = 1e-4 # Try 1e-4
-max_steps_oasst1 = 1000
+max_steps_oasst1 = 100
 adam_epsilon_oasst1 = 1e-8
 max_grad_norm_oasst1 = 1.0
 logging_dir_oasst1 = './logs_oasst1'
@@ -73,7 +69,7 @@ gradient_accumulation_steps_lima = 4
 warmup_steps_lima = 0
 weight_decay_lima = 0.01
 learning_rate_lima = 1e-4
-max_steps_lima = 300
+max_steps_lima = 100
 adam_epsilon_lima = 1e-8
 max_grad_norm_lima = 1.0
 logging_dir_lima = './logs_lima'
@@ -154,17 +150,11 @@ tokenized_lima_val.set_format(type="torch", columns=["input_ids", "attention_mas
 
 
 # Step 4: Configure LoRA
-lora_config = LoraConfig(
-    r=r,                        # Rank of the LoRA decomposition
-    lora_alpha=scaling_factor,  # Scaling factor for LoRA updates
-    lora_dropout=lora_dropout,  # Dropout rate applied to LoRA layers
-    bias=bias,                  # No bias is added to the LoRA layers
-    task_type="CAUSAL_LM",      # Specify the task as causal language modeling
-    target_modules=[            # Modules to apply LoRA to
-        'k_proj', 'q_proj', 'v_proj', 'o_proj',
-        'gate_proj', 'down_proj', 'up_proj'
-    ]
+prompt_config = PromptTuningConfig(
+    num_virtual_tokens=num_virtual_tokens,
+    task_type="CAUSAL_LM"
 )
+
 
 # Step 5: Train the model
 
@@ -202,7 +192,7 @@ oasst1_trainer = SFTTrainer(
     model=model,
     train_dataset=tokenized_oasst1_train,
     eval_dataset=tokenized_oasst1_val,
-    peft_config=lora_config,
+    peft_config=prompt_config,
     max_seq_length=256,
     tokenizer=tokenizer,
     args=oasst1_training_args,
@@ -251,7 +241,7 @@ lima_trainer = SFTTrainer(
     model=model,
     train_dataset=tokenized_lima_train,
     eval_dataset=tokenized_lima_val,
-    peft_config=lora_config,
+    peft_config=prompt_config,
     max_seq_length=256,
     tokenizer=tokenizer,
     args=lima_training_args,

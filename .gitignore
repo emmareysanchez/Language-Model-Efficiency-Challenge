@@ -173,3 +173,7 @@ cython_debug/
 models/
 output_oasst1/
 output_lima/
+
+# Logs directory
+logs_oasst1/
+logs_lima/

@@ -1,4 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from datasets import load_dataset
 import torch
 import json
 from tqdm import tqdm
@@ -19,19 +20,14 @@ model = AutoModelForCausalLM.from_pretrained(
 model.config.pad_token_id = tokenizer.eos_token_id
 
 # Step 2: Load the google/IFEval dataset
-tests = [
-    # {'prompt': 'What is the capital of France?', 'response': 'Paris'}, 
-    # {'prompt': 'Write the days of the week in English.', 'response': 'Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday'},
-    # {'prompt': '¿Cuál es la diferencia entre echo, print, print_r, var_dump y var_export en PHP?', 'response': 'echo: Muestra una o más cadenas de texto. print: Muestra una cadena de texto. print_r: Muestra información sobre una variable de forma legible. var_dump: Muestra información sobre una variable de forma legible. var_export: Muestra una representación de una variable que puede ser utilizada como código PHP.'},
-    # {'prompt': 'Tell me a story in English about a boy and a girl whoe went on a date.', 'response': 'Once upon a time'},
-    # {'prompt': 'Cuales son los planetas del sistema solar en español?', 'response': 'Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano, Neptuno'}
-    {"prompt": "Continue the following story in English: Here is a story about a date between a boy and a girl:\n\nOne evening, Josh, a young software engineer, received a text message from a mysterious number: \"Hey, I heard you're into board games. Want to play some games and grab dinner tomorrow?\" The number was from Emily, a girl Josh had seen at a few board game cafes. Josh was excited and quickly replied back, \"Sure, that sounds great!\"\n\nThe next evening, Josh met Emily at a trendy restaurant in downtown. Emily was wearing a green dress and had her hair tied back in a ponytail. Josh thought she looked gorgeous. During the dinner, they talked about their favorite board games, their jobs, and their hobbies. Josh found Emily very interesting and funny.\n\nAfter dinner, they walked to a board game cafe nearby. Emily ordered some drinks and some snacks, and they played two board games together. Josh won the first game, but Emily won the"}
-]
+ifeval = load_dataset("google/IFEval")
+# Select only the first 5 samples for testing
+tests = ifeval["train"].select(list(range(5)))
 
 # Step 3: Generate predictions on the dataset
 os.makedirs('responses/tests', exist_ok=True)
 num_model = model_name.split('/')[-3][-1]
-output_file = f"responses/tests/model_{num_model}_responses_test3.json"
+output_file = f"responses/tests/model_{num_model}_responses_test4.json"
 # output_file = f"responses/dataset/model_responses{num_model}.json"
 with open(output_file, 'w', encoding='utf-8') as f_out:
     for sample in tqdm(tests):
@@ -47,7 +43,7 @@ with open(output_file, 'w', encoding='utf-8') as f_out:
         # Generate output
         outputs = model.generate(
             inputs,
-            max_length=512,
+            max_length=256,
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
         )
