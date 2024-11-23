@@ -6,7 +6,7 @@ from tqdm import tqdm
 import os
 
 
-model_name = './models/model6/output_lima/checkpoint-300'
+model_name = './models/model7/output_lima/checkpoint-300'
 
 # Step 1: Load the tokenizer and model with quantization
 # model_name = "models/model1"  # Near 3B model (smallest available Qwen model)
@@ -27,7 +27,7 @@ tests = ifeval["train"].select(list(range(5)))
 # Step 3: Generate predictions on the dataset
 os.makedirs('responses/tests', exist_ok=True)
 num_model = model_name.split('/')[-3][-1]
-output_file = f"responses/tests/model_{num_model}_responses_test4.json"
+output_file = f"responses/tests/model_{num_model}_responses_test_ifeval.json"
 # output_file = f"responses/dataset/model_responses{num_model}.json"
 with open(output_file, 'w', encoding='utf-8') as f_out:
     for sample in tqdm(tests):

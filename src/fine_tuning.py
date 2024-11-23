@@ -24,7 +24,7 @@ llm_int8_skip_modules = None
 quant_type = "nf4"
 
 # 2. LoRA configuration hyperparameters
-r = 16               # Try 8
+r = 32               # Try 8
 scaling_factor = 16  # Try 32
 lora_dropout = 0.05  # Try 0.1
 bias = "none"
@@ -46,7 +46,7 @@ train_batch_size_oasst1 = 8
 eval_batch_size_oasst1 = 8
 num_train_epochs_oasst1 = 4
 logging_steps_oasst1 = 100
-save_steps_oasst1 = 25
+save_steps_oasst1 = 50
 output_dir_oasst1 = f"./models/model{num_model}/output_oasst1"
 per_device_train_batch_size_oasst1 = 4 # Try 8
 per_device_eval_batch_size_oasst1 = 4 # Try 8
@@ -54,7 +54,7 @@ gradient_accumulation_steps_oasst1 = 4
 warmup_steps_oasst1 = 0
 weight_decay_oasst1 = 0.01
 learning_rate_oasst1 = 1e-4 # Try 1e-4
-max_steps_oasst1 = 1000
+max_steps_oasst1 = 200
 adam_epsilon_oasst1 = 1e-8
 max_grad_norm_oasst1 = 1.0
 logging_dir_oasst1 = './logs_oasst1'
@@ -65,7 +65,7 @@ train_batch_size_lima = 8
 eval_batch_size_lima = 8
 num_train_epochs_lima = 4
 logging_steps_lima = 100
-save_steps_lima = 25
+save_steps_lima = 50
 output_dir_lima = f"./models/model{num_model}/output_lima"
 per_device_train_batch_size_lima = 4 # Try 8
 per_device_eval_batch_size_lima = 4 # Try 8
@@ -73,14 +73,14 @@ gradient_accumulation_steps_lima = 4
 warmup_steps_lima = 0
 weight_decay_lima = 0.01
 learning_rate_lima = 1e-4
-max_steps_lima = 300
+max_steps_lima = 100
 adam_epsilon_lima = 1e-8
 max_grad_norm_lima = 1.0
 logging_dir_lima = './logs_lima'
 
 # 4. Evaluation hyperparameters
-eval_steps = 1000
-eval_logging_steps = 1000
+eval_steps = 50
+eval_logging_steps = 50
 eval_output_dir = "eval_output"
 eval_overwrite_output_dir = True
 eval_per_device_eval_batch_size = 8
@@ -98,7 +98,7 @@ tokenizer = AutoTokenizer.from_pretrained(  # por que el tokenizador depende del
     model_name,
     add_eos_token=True,
     use_fast=True,
-    padding_side="right",
+    padding_side="left",
     trust_remote_code=True
 )
 
@@ -128,7 +128,9 @@ lima_train, lima_val, oasst1_train, oasst1_val = load_datasets(data_path)
 def tokenize_function(example):
     conversation = list()
     for prompt, response in zip(example["prompt"], example["response"]):
-        conversation.append(prompt + " " + response)
+        # We have to include the end of sentence token at the end of the response
+        c = "Prompt:" + prompt + " \nResponse: " + response
+        conversation.append(c)
     return tokenizer(
         conversation,
         truncation=True,
