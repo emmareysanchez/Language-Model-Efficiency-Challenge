@@ -1,5 +1,4 @@
 import torch
-from datasets import load_dataset
 from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training, get_peft_model
 from transformers import (
     AutoModelForCausalLM,
@@ -7,7 +6,6 @@ from transformers import (
     BitsAndBytesConfig,
     AutoTokenizer,
     TrainingArguments,
-    Trainer
 )
 from trl import SFTTrainer, SFTConfig
 from evaluate import load
@@ -17,21 +15,15 @@ from src.utils import load_datasets
 
 
 # HACK: Hyperparameters of the training
-# 1. Quantization configuration hyperparameters
-load_in_8bit = True
-llm_int8_threshold = 6.0
-llm_int8_skip_modules = None
-quant_type = "nf4"
 
-# 2. LoRA configuration hyperparameters
+# 1. LoRA configuration hyperparameters
 r = 32               # Try 8
 scaling_factor = 16  # Try 32
 lora_dropout = 0.05  # Try 0.1
 bias = "none"
 task_type = "CAUSAL_LM"
 
-# 3. Training hyperparameters
-overwrite_output_dir = True
+# 2. Training hyperparameters
 seed = 42
 save_total_limit = 3
 logging_strategy = 'steps'
@@ -42,51 +34,43 @@ except FileNotFoundError:
     num_model = 1
 
 # 3.1 OASST1 hyperparameters
-train_batch_size_oasst1 = 8
-eval_batch_size_oasst1 = 8
 num_train_epochs_oasst1 = 4
 logging_steps_oasst1 = 100
-save_steps_oasst1 = 50
+save_steps_oasst1 = 100
 output_dir_oasst1 = f"./models/model{num_model}/output_oasst1"
 per_device_train_batch_size_oasst1 = 4 # Try 8
 per_device_eval_batch_size_oasst1 = 4 # Try 8
 gradient_accumulation_steps_oasst1 = 4
 warmup_steps_oasst1 = 0
-weight_decay_oasst1 = 0.01
 learning_rate_oasst1 = 1e-4 # Try 1e-4
-max_steps_oasst1 = 200
-adam_epsilon_oasst1 = 1e-8
-max_grad_norm_oasst1 = 1.0
+max_steps_oasst1 = 7000
 logging_dir_oasst1 = './logs_oasst1'
 
-# 3.2 LIMA hyperparameters
+# # 3.2 LIMA hyperparameters
 
-train_batch_size_lima = 8
-eval_batch_size_lima = 8
-num_train_epochs_lima = 4
-logging_steps_lima = 100
-save_steps_lima = 50
-output_dir_lima = f"./models/model{num_model}/output_lima"
-per_device_train_batch_size_lima = 4 # Try 8
-per_device_eval_batch_size_lima = 4 # Try 8
-gradient_accumulation_steps_lima = 4
-warmup_steps_lima = 0
-weight_decay_lima = 0.01
-learning_rate_lima = 1e-4
-max_steps_lima = 100
-adam_epsilon_lima = 1e-8
-max_grad_norm_lima = 1.0
-logging_dir_lima = './logs_lima'
+# train_batch_size_lima = 8
+# eval_batch_size_lima = 8
+# num_train_epochs_lima = 4
+# logging_steps_lima = 100
+# save_steps_lima = 50
+# output_dir_lima = f"./models/model{num_model}/output_lima"
+# per_device_train_batch_size_lima = 4 # Try 8
+# per_device_eval_batch_size_lima = 4 # Try 8
+# gradient_accumulation_steps_lima = 4
+# warmup_steps_lima = 0
+# weight_decay_lima = 0.01
+# learning_rate_lima = 1e-4
+# max_steps_lima = 1000
+# adam_epsilon_lima = 1e-8
+# max_grad_norm_lima = 1.0
+# logging_dir_lima = './logs_lima'
 
 # 4. Evaluation hyperparameters
-eval_steps = 50
-eval_logging_steps = 50
-eval_output_dir = "eval_output"
-eval_overwrite_output_dir = True
-eval_per_device_eval_batch_size = 8
+eval_steps = 100
 
 # 5. Model configuration hyperparameters
-model_name = "mistralai/Mistral-7B-v0.3"
+# model_name = "mistralai/Mistral-7B-v0.3"
+model_name = "Qwen/Qwen2.5-7B"
 
 # 6. Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -143,16 +127,16 @@ def tokenize_function(example):
 tokenized_oasst1_train = oasst1_train.map(tokenize_function, batched=True, remove_columns=oasst1_train.column_names)
 tokenized_oasst1_val = oasst1_val.map(tokenize_function, batched=True, remove_columns=oasst1_val.column_names)
 
-tokenized_lima_train = lima_train.map(tokenize_function, batched=True, remove_columns=lima_train.column_names)
-tokenized_lima_val = lima_val.map(tokenize_function, batched=True, remove_columns=lima_val.column_names)
+# tokenized_lima_train = lima_train.map(tokenize_function, batched=True, remove_columns=lima_train.column_names)
+# tokenized_lima_val = lima_val.map(tokenize_function, batched=True, remove_columns=lima_val.column_names)
 
 
 # Set format to torch
 tokenized_oasst1_train.set_format(type="torch", columns=["input_ids", "attention_mask"])
 tokenized_oasst1_val.set_format(type="torch", columns=["input_ids", "attention_mask"])
 
-tokenized_lima_train.set_format(type="torch", columns=["input_ids", "attention_mask"])
-tokenized_lima_val.set_format(type="torch", columns=["input_ids", "attention_mask"])
+# tokenized_lima_train.set_format(type="torch", columns=["input_ids", "attention_mask"])
+# tokenized_lima_val.set_format(type="torch", columns=["input_ids", "attention_mask"])
 
 
 # Step 4: Configure LoRA
@@ -193,9 +177,6 @@ oasst1_training_args = TrainingArguments(
     seed=seed,
     logging_dir=logging_dir_oasst1,
     logging_strategy=logging_strategy,
-    # weight_decay=0.01,
-    # fp16=True,
-    # load_best_model_at_end=True,
 )
 
 
@@ -215,55 +196,55 @@ oasst1_trainer.train()
 # Save the model fine-tuned on OASST1
 print("Saving fine-tuned model on OASST1 without gradients...")
 model.eval()  # Asegúrate de que el modelo esté en modo evaluación
-model.save_pretrained(output_dir_oasst1 + "/final", safe_serialization=True)
-tokenizer.save_pretrained(output_dir_oasst1 + "/final")
+# model.save_pretrained(output_dir_oasst1 + "/final", safe_serialization=True)
+# tokenizer.save_pretrained(output_dir_oasst1 + "/final")
 print("Model fine-tuned on OASST1 saved without gradients.")
 
 
-# Training with LIMA
-lima_training_args = TrainingArguments(
-    output_dir=output_dir_lima,
-    eval_strategy="steps",
-    do_eval=True,
-    optim="paged_adamw_8bit",
-    per_device_train_batch_size=per_device_train_batch_size_lima,
-    gradient_accumulation_steps=gradient_accumulation_steps_lima,
-    per_device_eval_batch_size=per_device_eval_batch_size_lima,
-    log_level="debug",
-    logging_steps=logging_steps_lima,
-    learning_rate=learning_rate_lima,
-    eval_steps=eval_steps,
-    max_steps=max_steps_lima,
-    save_steps=save_steps_lima,
-    warmup_steps=warmup_steps_lima,
-    lr_scheduler_type="linear",
-    num_train_epochs=num_train_epochs_lima,
-    save_total_limit=save_total_limit,
-    seed=seed,
-    logging_dir=logging_dir_lima,
-    logging_strategy=logging_strategy,
-    # weight_decay=0.01,
-    # fp16=True,
-    # load_best_model_at_end=True,
-)
+# # Training with LIMA
+# lima_training_args = TrainingArguments(
+#     output_dir=output_dir_lima,
+#     eval_strategy="steps",
+#     do_eval=True,
+#     optim="paged_adamw_8bit",
+#     per_device_train_batch_size=per_device_train_batch_size_lima,
+#     gradient_accumulation_steps=gradient_accumulation_steps_lima,
+#     per_device_eval_batch_size=per_device_eval_batch_size_lima,
+#     log_level="debug",
+#     logging_steps=logging_steps_lima,
+#     learning_rate=learning_rate_lima,
+#     eval_steps=eval_steps,
+#     max_steps=max_steps_lima,
+#     save_steps=save_steps_lima,
+#     warmup_steps=warmup_steps_lima,
+#     lr_scheduler_type="linear",
+#     num_train_epochs=num_train_epochs_lima,
+#     save_total_limit=save_total_limit,
+#     seed=seed,
+#     logging_dir=logging_dir_lima,
+#     logging_strategy=logging_strategy,
+#     # weight_decay=0.01,
+#     # fp16=True,
+#     # load_best_model_at_end=True,
+# )
 
 
-# Fine-tuning on LIMA
-lima_trainer = SFTTrainer(
-    model=model,
-    train_dataset=tokenized_lima_train,
-    eval_dataset=tokenized_lima_val,
-    peft_config=lora_config,
-    max_seq_length=256,
-    tokenizer=tokenizer,
-    args=lima_training_args,
-)
-print("Starting fine-tuning on LIMA...")
-lima_trainer.train()
+# # Fine-tuning on LIMA
+# lima_trainer = SFTTrainer(
+#     model=model,
+#     train_dataset=tokenized_lima_train,
+#     eval_dataset=tokenized_lima_val,
+#     peft_config=lora_config,
+#     max_seq_length=256,
+#     tokenizer=tokenizer,
+#     args=lima_training_args,
+# )
+# print("Starting fine-tuning on LIMA...")
+# lima_trainer.train()
 
-# Save the model fine-tuned on LIMA
-print("Saving fine-tuned model on LIMA without gradients...")
-model.eval()  # Asegúrate de que el modelo esté en modo evaluación
-model.save_pretrained(output_dir_lima + "/final", safe_serialization=True)
-tokenizer.save_pretrained(output_dir_lima + "/final")
-print("Model fine-tuned on LIMA saved without gradients.")
+# # Save the model fine-tuned on LIMA
+# print("Saving fine-tuned model on LIMA without gradients...")
+# model.eval()  # Asegúrate de que el modelo esté en modo evaluación
+# model.save_pretrained(output_dir_lima + "/final", safe_serialization=True)
+# tokenizer.save_pretrained(output_dir_lima + "/final")
+# print("Model fine-tuned on LIMA saved without gradients.")
