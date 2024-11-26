@@ -1,0 +1,86 @@
+I1124 14:16:55.700221 140042215679808 evaluation_main.py:268] Generating eval_results_strict...
+I1124 14:16:56.053726 140042215679808 evaluation_main.py:276] Accuracy: 0.192593
+I1124 14:16:56.060325 140042215679808 evaluation_main.py:282] Generated: instruction_following_eval/data/evaluation_results/eval_results_strict.jsonl
+================================================================
+instruction_following_eval/data/evaluation_results/eval_results_strict.jsonl Accuracy Scores:
+prompt-level: 0.1925925925925926
+instruction-level: 0.2860576923076923
+
+change_case 0.2696629213483146
+combination 0.03076923076923077
+detectable_content 0.25
+detectable_format 0.30128205128205127
+keywords 0.4233128834355828
+language 0.8387096774193549
+length_constraints 0.23776223776223776
+punctuation 0.2727272727272727
+startend 0.07462686567164178
+
+change_case:capital_word_frequency 0.48
+change_case:english_capital 0.04
+change_case:english_lowercase 0.28205128205128205
+combination:repeat_prompt 0.024390243902439025
+combination:two_responses 0.041666666666666664
+detectable_content:number_placeholders 0.23076923076923078
+detectable_content:postscript 0.2692307692307692
+detectable_format:constrained_response 0.3
+detectable_format:json_format 0.0
+detectable_format:multiple_sections 0.21428571428571427
+detectable_format:number_bullet_lists 0.3225806451612903
+detectable_format:number_highlighted_sections 0.23404255319148937
+detectable_format:title 0.5405405405405406
+keywords:existence 0.2564102564102564
+keywords:forbidden_words 0.5510204081632653
+keywords:frequency 0.38095238095238093
+keywords:letter_frequency 0.48484848484848486
+language:response_language 0.8387096774193549
+length_constraints:nth_paragraph_first_word 0.0
+length_constraints:number_paragraphs 0.0
+length_constraints:number_sentences 0.38461538461538464
+length_constraints:number_words 0.2692307692307692
+punctuation:no_comma 0.2727272727272727
+startend:end_checker 0.11538461538461539
+startend:quotation 0.04878048780487805
+I1124 14:16:56.061460 140042215679808 evaluation_main.py:268] Generating eval_results_loose...
+I1124 14:16:56.290910 140042215679808 evaluation_main.py:276] Accuracy: 0.235185
+I1124 14:16:56.298497 140042215679808 evaluation_main.py:282] Generated: instruction_following_eval/data/evaluation_results/eval_results_loose.jsonl
+================================================================
+instruction_following_eval/data/evaluation_results/eval_results_loose.jsonl Accuracy Scores:
+prompt-level: 0.2351851851851852
+instruction-level: 0.34375
+
+change_case 0.33707865168539325
+combination 0.03076923076923077
+detectable_content 0.25
+detectable_format 0.32051282051282054
+keywords 0.5030674846625767
+language 0.8709677419354839
+length_constraints 0.32167832167832167
+punctuation 0.4696969696969697
+startend 0.07462686567164178
+
+change_case:capital_word_frequency 0.52
+change_case:english_capital 0.08
+change_case:english_lowercase 0.38461538461538464
+combination:repeat_prompt 0.024390243902439025
+combination:two_responses 0.041666666666666664
+detectable_content:number_placeholders 0.23076923076923078
+detectable_content:postscript 0.2692307692307692
+detectable_format:constrained_response 0.3
+detectable_format:json_format 0.11764705882352941
+detectable_format:multiple_sections 0.21428571428571427
+detectable_format:number_bullet_lists 0.3548387096774194
+detectable_format:number_highlighted_sections 0.23404255319148937
+detectable_format:title 0.5405405405405406
+keywords:existence 0.2564102564102564
+keywords:forbidden_words 0.7755102040816326
+keywords:frequency 0.40476190476190477
+keywords:letter_frequency 0.5151515151515151
+language:response_language 0.8709677419354839
+length_constraints:nth_paragraph_first_word 0.08333333333333333
+length_constraints:number_paragraphs 0.0
+length_constraints:number_sentences 0.5384615384615384
+length_constraints:number_words 0.3269230769230769
+punctuation:no_comma 0.4696969696969697
+startend:end_checker 0.11538461538461539
+startend:quotation 0.04878048780487805

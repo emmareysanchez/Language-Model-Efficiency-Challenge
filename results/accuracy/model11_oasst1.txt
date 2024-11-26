@@ -1,0 +1,86 @@
+I1124 14:54:49.233529 139739371996992 evaluation_main.py:268] Generating eval_results_strict...
+I1124 14:54:49.668623 139739371996992 evaluation_main.py:276] Accuracy: 0.237037
+I1124 14:54:49.674433 139739371996992 evaluation_main.py:282] Generated: instruction_following_eval/data/evaluation_results/eval_results_strict.jsonl
+================================================================
+instruction_following_eval/data/evaluation_results/eval_results_strict.jsonl Accuracy Scores:
+prompt-level: 0.23703703703703705
+instruction-level: 0.34375
+
+change_case 0.33707865168539325
+combination 0.26153846153846155
+detectable_content 0.4230769230769231
+detectable_format 0.48717948717948717
+keywords 0.4110429447852761
+language 0.8064516129032258
+length_constraints 0.22377622377622378
+punctuation 0.21212121212121213
+startend 0.04477611940298507
+
+change_case:capital_word_frequency 0.52
+change_case:english_capital 0.36
+change_case:english_lowercase 0.20512820512820512
+combination:repeat_prompt 0.3902439024390244
+combination:two_responses 0.041666666666666664
+detectable_content:number_placeholders 0.38461538461538464
+detectable_content:postscript 0.46153846153846156
+detectable_format:constrained_response 1.0
+detectable_format:json_format 0.11764705882352941
+detectable_format:multiple_sections 0.35714285714285715
+detectable_format:number_bullet_lists 0.3870967741935484
+detectable_format:number_highlighted_sections 0.23404255319148937
+detectable_format:title 0.972972972972973
+keywords:existence 0.5128205128205128
+keywords:forbidden_words 0.32653061224489793
+keywords:frequency 0.38095238095238093
+keywords:letter_frequency 0.45454545454545453
+language:response_language 0.8064516129032258
+length_constraints:nth_paragraph_first_word 0.08333333333333333
+length_constraints:number_paragraphs 0.037037037037037035
+length_constraints:number_sentences 0.34615384615384615
+length_constraints:number_words 0.23076923076923078
+punctuation:no_comma 0.21212121212121213
+startend:end_checker 0.07692307692307693
+startend:quotation 0.024390243902439025
+I1124 14:54:49.675395 139739371996992 evaluation_main.py:268] Generating eval_results_loose...
+I1124 14:54:49.909319 139739371996992 evaluation_main.py:276] Accuracy: 0.272222
+I1124 14:54:49.914640 139739371996992 evaluation_main.py:282] Generated: instruction_following_eval/data/evaluation_results/eval_results_loose.jsonl
+================================================================
+instruction_following_eval/data/evaluation_results/eval_results_loose.jsonl Accuracy Scores:
+prompt-level: 0.2722222222222222
+instruction-level: 0.38221153846153844
+
+change_case 0.3595505617977528
+combination 0.26153846153846155
+detectable_content 0.4230769230769231
+detectable_format 0.5
+keywords 0.4662576687116564
+language 0.8387096774193549
+length_constraints 0.27972027972027974
+punctuation 0.2878787878787879
+startend 0.11940298507462686
+
+change_case:capital_word_frequency 0.52
+change_case:english_capital 0.4
+change_case:english_lowercase 0.23076923076923078
+combination:repeat_prompt 0.3902439024390244
+combination:two_responses 0.041666666666666664
+detectable_content:number_placeholders 0.38461538461538464
+detectable_content:postscript 0.46153846153846156
+detectable_format:constrained_response 1.0
+detectable_format:json_format 0.23529411764705882
+detectable_format:multiple_sections 0.35714285714285715
+detectable_format:number_bullet_lists 0.3870967741935484
+detectable_format:number_highlighted_sections 0.23404255319148937
+detectable_format:title 0.972972972972973
+keywords:existence 0.5128205128205128
+keywords:forbidden_words 0.46938775510204084
+keywords:frequency 0.40476190476190477
+keywords:letter_frequency 0.48484848484848486
+language:response_language 0.8387096774193549
+length_constraints:nth_paragraph_first_word 0.08333333333333333
+length_constraints:number_paragraphs 0.07407407407407407
+length_constraints:number_sentences 0.46153846153846156
+length_constraints:number_words 0.25
+punctuation:no_comma 0.2878787878787879
+startend:end_checker 0.11538461538461539
+startend:quotation 0.12195121951219512
